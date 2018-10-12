@@ -13,6 +13,21 @@ import 'package:minimal_timer/mtimer.dart';
 
 void main() => runApp(new MyApp());
 
+String sec2str(int sec) {
+  bool neg = sec < 0;
+  if (neg) sec *= -1;
+  bool lessthanmin = sec < 60;
+  String out = "";
+  if (neg) out += '-';
+  if (!lessthanmin) {
+    return out +
+        (sec ~/ 60).toString() +
+        ":" +
+        (sec %= 60).toString().padLeft(2, '0');
+  }
+  return out + sec.toString();
+}
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -59,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //constructor allows arguments to the MTimer constructor
   _MyHomePageState() {
     timer = new MTimer(
-      startTime: Duration(seconds: 60),
+      startTime: Duration(seconds: -100),
       timerUpdate: _timerUpdate,
     );
   }
@@ -108,11 +123,8 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new TextField(),
-            new Text(
-              '${timer.currentTime}',
-              style: Theme.of(context).textTheme.display1,
-            ),
+            new Text('${sec2str(timer.currentTime.inSeconds)}',
+                style: TextStyle(fontSize: 100.0)),
           ],
         ),
       ),

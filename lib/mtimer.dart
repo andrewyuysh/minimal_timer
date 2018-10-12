@@ -18,15 +18,8 @@ class MTimer {
     return _currentTime;
   }
 
-  // resume() {
-  //   if (state == timerState.running) return;
-  //   state = timerState.running;
-  //   stopwatch.start();
-  //   _tick();
-  // }
-
   _tick() {
-    _currentTime = startTime - stopwatch.elapsed;
+    _currentTime = startTime - Duration(seconds: stopwatch.elapsed.inSeconds);
     if (null != timerUpdate) {
       timerUpdate();
     }
