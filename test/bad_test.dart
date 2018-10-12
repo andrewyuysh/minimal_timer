@@ -1,6 +1,12 @@
-import 'package:minimal_timer/mtimer.dart';
+import 'dart:async';
 
-void main() {
-  var t = MTimer();
-  print(t.currentTime);
+main() {
+  Timer timer = new Timer.periodic(new Duration(seconds: 5), (timer) {
+    print('Something');
+  });
+
+// Stop the periodic timer using another timer which runs only once after specified duration
+  new Timer(new Duration(minutes: 1), () {
+    print('hey');
+  });
 }

@@ -2,7 +2,10 @@
 //setState() calls build (refreshes screen)
 //timerUpdate() is used to call setState() indirectly from mtimer.dart
 //if timer is running -> reset, overlapping _tick() calls are made
-//_tick() call -> rendering display takes ~1.02 seconds, not exactly 1.00
+////_tick() call -> rendering display takes ~1.02 seconds, not exactly 1.00
+////FIXED USING Timer.periodic() -> _tick() instead of each _tick() running its own timer
+//var timer = new Timer();
+//Timer timer; what's the diff?
 
 import 'package:flutter/material.dart';
 
@@ -53,6 +56,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   MTimer timer;
 
+  //constructor allows arguments to the MTimer constructor
   _MyHomePageState() {
     timer = new MTimer(
       startTime: Duration(seconds: 60),
@@ -60,11 +64,13 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  //function for button
   restartTimer() {
     timer.restart();
     setState(() {});
   }
 
+  //function from mtimer.dart that allows the main to refresh/setState
   _timerUpdate() {
     setState(() {});
   }
@@ -102,12 +108,9 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new Text(
-              'You have pushed the button this many times:',
-            ),
+            new TextField(),
             new Text(
               '${timer.currentTime}',
-              // 'asd',
               style: Theme.of(context).textTheme.display1,
             ),
           ],

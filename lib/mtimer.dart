@@ -1,7 +1,9 @@
 import 'dart:async';
 
 class MTimer {
+  Timer timer;
   Duration _currentTime = Duration(seconds: 0);
+  // int _currentTime = 0;
   Duration startTime = Duration(seconds: 0);
   Function timerUpdate;
   timerState state = timerState.ready;
@@ -16,15 +18,14 @@ class MTimer {
     return _currentTime;
   }
 
-  resume() {
-    if (state == timerState.running) return;
-    state = timerState.running;
-    stopwatch.start();
-    _tick();
-  }
+  // resume() {
+  //   if (state == timerState.running) return;
+  //   state = timerState.running;
+  //   stopwatch.start();
+  //   _tick();
+  // }
 
   _tick() {
-    new Timer(const Duration(seconds: 1), _tick);
     _currentTime = startTime - stopwatch.elapsed;
     if (null != timerUpdate) {
       timerUpdate();
@@ -33,10 +34,15 @@ class MTimer {
 
   restart() {
     state = timerState.running;
-    startTime = Duration(seconds: 60);
+
     stopwatch.reset();
-    stopwatch.start();
     _tick();
+    stopwatch.start();
+
+    if (timer != null) timer.cancel();
+    timer = new Timer.periodic(new Duration(seconds: 1), (timer) {
+      _tick();
+    });
   }
 }
 
