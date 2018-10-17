@@ -74,14 +74,14 @@ class _MyHomePageState extends State<MyHomePage> {
   //constructor allows arguments to the MTimer constructor
   _MyHomePageState() {
     timer = new MTimer(
-      startTime: Duration(seconds: -100),
+      startTime: Duration(seconds: 80),
       timerUpdate: _timerUpdate,
     );
   }
 
   //function for button
-  restartTimer() {
-    timer.restart();
+  fullScreenButton() {
+    timer.fullScreenButton();
     setState(() {});
   }
 
@@ -99,21 +99,25 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return new Scaffold(
-      body: new Stack(
+      body: new Container(
         alignment: Alignment.center,
-        children: <Widget>[
-          new Center(
-            child: new Text('${sec2str(timer.currentTime.inSeconds)}',
-                style: TextStyle(fontSize: 100.0)),
-          ),
-          new FlatButton(
-            onPressed: restartTimer,
-            child: new Text(
-              '',
-              style: TextStyle(fontSize: 100.0),
+        child: new Stack(
+          children: <Widget>[
+            new Center(
+              child: new Text('${sec2str(timer.currentTime.inSeconds)}',
+                  style: TextStyle(fontSize: 100.0)),
             ),
-          ),
-        ],
+            new Opacity(
+              opacity: 0.4,
+              child: new RawMaterialButton(
+                onPressed: fullScreenButton,
+                fillColor: Colors.red,
+                constraints: BoxConstraints(
+                    minHeight: double.infinity, minWidth: double.infinity),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

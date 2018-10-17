@@ -25,17 +25,30 @@ class MTimer {
     }
   }
 
-  restart() {
-    state = timerState.running;
-
+  reset() {
+    state = timerState.ready;
     stopwatch.reset();
-    _tick();
+    stopwatch.stop();
+    _currentTime = startTime;
+    if (null != timerUpdate) {
+      timerUpdate();
+    }
+    if (timer != null) timer.cancel();
+  }
+
+  resume() {
+    state = timerState.running;
     stopwatch.start();
 
-    if (timer != null) timer.cancel();
     timer = new Timer.periodic(new Duration(seconds: 1), (timer) {
       _tick();
     });
+  }
+
+  fullScreenButton() {
+    if (state == timerState.running)
+      reset();
+    else if (state == timerState.ready) resume();
   }
 }
 
