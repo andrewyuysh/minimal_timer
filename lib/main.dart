@@ -70,17 +70,22 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   MTimer timer;
+  int startTime = 0;
+  double dragCounter = 0.0;
 
   //constructor allows arguments to the MTimer constructor
   _MyHomePageState() {
     timer = new MTimer(
-      startTime: Duration(seconds: 80),
+      startTime: Duration(seconds: startTime),
       timerUpdate: _timerUpdate,
     );
   }
 
-  //function for button
-  fullScreenButton() {
+  //function for drag gestures
+  drag() {}
+
+  //function for tap gestures
+  tap() {
     timer.fullScreenButton();
     setState(() {});
   }
@@ -107,15 +112,34 @@ class _MyHomePageState extends State<MyHomePage> {
               child: new Text('${sec2str(timer.currentTime.inSeconds)}',
                   style: TextStyle(fontSize: 100.0)),
             ),
-            new Opacity(
-              opacity: 0.4,
-              child: new RawMaterialButton(
-                onPressed: fullScreenButton,
-                fillColor: Colors.red,
-                constraints: BoxConstraints(
-                    minHeight: double.infinity, minWidth: double.infinity),
-              ),
-            ),
+            new GestureDetector(
+              onTap: tap,
+              onVerticalDragUpdate: (details) {
+                if (timer.state == timerState.ready) {
+                  dragCounter += (details.primaryDelta);
+                  if (dragCounter < -30) {
+                    timer.startTime += Duration(seconds: 1);
+                    dragCounter = 0.0;
+                    timer.reset();
+                  } else if (dragCounter > 30) {
+                    timer.startTime -= Duration(seconds: 1);
+                    dragCounter = 0.0;
+                    timer.reset();
+                  }
+                  // setState(() {});
+                }
+              },
+              // onLongPress: fullScreenButton,
+            )
+            // new Opacity(
+            //   opacity: 0.4,
+            //   child: new RawMaterialButton(
+            //     onPressed: fullScreenButton,
+            //     fillColor: Colors.red,
+            //     constraints: BoxConstraints(
+            //         minHeight: double.infinity, minWidth: double.infinity),
+            //   ),
+            // ),
           ],
         ),
       ),
