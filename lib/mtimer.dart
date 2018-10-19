@@ -8,6 +8,7 @@ class MTimer {
   Function timerUpdate;
   timerState state = timerState.ready;
   final Stopwatch stopwatch = new Stopwatch();
+  double dragCounter = 0.0;
 
   MTimer({
     this.startTime,
@@ -45,7 +46,21 @@ class MTimer {
     });
   }
 
-  fullScreenButton() {
+  dragTime(details) {
+    dragCounter += (details.primaryDelta);
+    if (state != timerState.ready) return;
+    if (dragCounter < -30) {
+      startTime += Duration(seconds: 1);
+      dragCounter = 0.0;
+      reset();
+    } else if (dragCounter > 30) {
+      startTime -= Duration(seconds: 1);
+      dragCounter = 0.0;
+      reset();
+    }
+  }
+
+  tap() {
     if (state == timerState.running)
       reset();
     else if (state == timerState.ready) resume();
