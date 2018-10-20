@@ -36,14 +36,6 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       title: 'Flutter Demo',
       theme: new ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
-        // counter didn't reset back to zero; the application is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: new MyHomePage(title: 'Flutter Demo Home Page'),
@@ -105,8 +97,6 @@ class _MyHomePageState extends State<MyHomePage> {
         children: <Widget>[
           new Container(
             constraints: BoxConstraints.expand(),
-            // height: MediaQuery.of(context).size.height,
-            // width: MediaQuery.of(context).size.width,
             color: Color(0xff212028), //MOUNTAIN COLOR
             child: new ClipPath(
               clipper: MountainClipper(),
@@ -149,51 +139,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-// new Stack(
-//   children: <Widget>[
-//     new Center(
-//       child: new Container(
-//         height: 200.0,
-//         width: 200.0,
-//         decoration: new BoxDecoration(
-//           shape: BoxShape.circle,
-//           color: Colors.red,
-//         ),
-//       ),
-//     ),
-//     new ClipPath(
-//       child: new Container(
-//         alignment: Alignment.bottomCenter,
-//         height: 200.0,
-//         width: 200.0,
-//         decoration: new BoxDecoration(
-//           shape: BoxShape.rectangle,
-//           color: Colors.blue,
-//         ),
-//       ),
-//       clipper: MountainClipper(),
-//     ),
-//     new Center(
-//       child: new Text(
-//         '${sec2str(timer.currentTime.inSeconds)}',
-//         style: TextStyle(fontSize: 100.0),
-//       ),
-//     ),
-//     new GestureDetector(
-//       onTap: tap,
-//       onVerticalDragUpdate: (details) => drag(details),
-//     ),
-
-// new Opacity(
-//   opacity: 0.4,
-//   child: new RawMaterialButton(
-//     onPressed: fullScreenButton,
-//     fillColor: Colors.red,
-//     constraints: BoxConstraints(
-//         minHeight: double.infinity, minWidth: double.infinity),
-//   ),
-// ),
 
 class MountainClipper extends CustomClipper<Path> {
   @override
