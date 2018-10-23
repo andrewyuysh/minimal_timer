@@ -11,33 +11,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:minimal_timer/mtimer.dart';
+import 'package:flutter/animation.dart';
 
-void main() => runApp(new MyApp());
-
-String sec2str(int sec) {
-  bool neg = sec < 0;
-  if (neg) sec *= -1;
-  bool lessthanmin = sec < 60;
-  String out = "";
-  if (neg) out += '-';
-  if (!lessthanmin) {
-    return out +
-        (sec ~/ 60).toString() +
-        ":" +
-        (sec %= 60).toString().padLeft(2, '0');
-  }
-  return out + sec.toString();
+void main() {
+  runApp(new MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Flutter Demo',
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       home: new MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -45,120 +28,47 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
-
   @override
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  MTimer timer;
-  int startTime = 0;
-  double dragCounter = 0.0;
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
+  // Animation<double> animation;
+  // AnimationController controller;
+
+  // MTimer timer;
+  // int startTime = 0;
+  // double dragCounter = 0.0;
+
+  // initState() {
+  //   super.initState();
+  //   controller = AnimationController(
+  //       duration: const Duration(milliseconds: 10000), vsync: this);
+  //   animation = Tween(begin: 30.0, end: 300.0).animate(controller)
+  //     ..addListener(() {
+  //       setState(() {
+  //         // the state that has changed here is the animation object’s value
+  //       });
+  //     });
+  //   // controller.forward();
+  //   controller.repeat();
+  // }
+
+  // dispose() {
+  //   controller.dispose();
+  //   super.dispose();
+  // }
 
   //constructor allows arguments to the MTimer constructor
-  _MyHomePageState() {
-    timer = new MTimer(
-      startTime: Duration(seconds: startTime),
-      timerUpdate: _timerUpdate,
-    );
-  }
-
-  //function for drag gestures
-  drag(DragUpdateDetails details) {
-    timer.dragTime(details);
-  }
-
-  //function for tap gestures
-  tap() {
-    timer.tap();
-    setState(() {});
-  }
-
-  //function from mtimer.dart that allows the main to refresh/setState
-  _timerUpdate() {
-    setState(() {});
-  }
+  _MyHomePageState();
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: new Stack(
-        children: <Widget>[
-          new Container(
-            constraints: BoxConstraints.expand(),
-            color: Color(0xff212028), //MOUNTAIN COLOR
-            child: new ClipPath(
-              clipper: MountainClipper(),
-              child: Container(
-                color: Color(0xffad4232), //SKY COLOR
-                child: new Stack(
-                  children: <Widget>[
-                    Center(
-                      child: new Container(
-                        height:
-                            MediaQuery.of(context).size.width * 312.0 / 2048.0,
-                        width:
-                            MediaQuery.of(context).size.width * 312.0 / 2048.0,
-                        decoration: new BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xffe0e3d2), //SUN COLOR
-                        ),
-                        child: new Center(
-                          child: new Text(
-                            '${sec2str(timer.currentTime.inSeconds)}',
-                            style: TextStyle(
-                              fontSize: 24.0,
-                              color: Color(0xffad4232),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          new GestureDetector(
-            onTap: tap,
-            onVerticalDragUpdate: (details) => drag(details),
-          ),
-        ],
-      ),
+      // backgroundColor: Colors.white,
+      body: MTimer(),
     );
   }
-}
-
-class MountainClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    var path = Path();
-    path.lineTo(0.0, size.height);
-    double heightratio = 848.0 / 1300.0;
-    // path.lineTo(size.width / 2.0,
-    //     size.height - (size.width / 2.0 * 1.28)); // 45deg right triangle
-    path.lineTo(size.width / 2.0 * heightratio,
-        size.height - (heightratio * size.width / 2.0 * 1.27));
-    path.lineTo(size.width - size.width / 2.0 * heightratio,
-        size.height - (heightratio * size.width / 2.0 * 1.27));
-
-    path.lineTo(size.width, size.height);
-    path.lineTo(size.width, 0.0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
