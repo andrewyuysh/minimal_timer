@@ -48,7 +48,7 @@ class _MTimerState extends State<MTimer> {
   }
 
   _tick() {
-    _currentTime = startTime - Duration(seconds: stopwatch.elapsed.inSeconds);
+    _currentTime = startTime - stopwatch.elapsed;
     setState(() {});
   }
 
@@ -65,7 +65,8 @@ class _MTimerState extends State<MTimer> {
     state = timerState.running;
     stopwatch.start();
 
-    timer = new Timer.periodic(new Duration(seconds: 1), (timer) {
+    timer = new Timer.periodic(new Duration(milliseconds: 100), (timer) {
+      //60 frames / 1000 millisecs
       _tick();
     });
   }
@@ -74,17 +75,13 @@ class _MTimerState extends State<MTimer> {
   //drag also modifies millis
   //when drag is let go, then snap to the nearest second
   dragTime(details) {
-    dragCounter += (details.primaryDelta);
-    if (state != timerState.ready) return;
-    if (dragCounter < -30) {
-      startTime += Duration(seconds: 1);
-      dragCounter = 0.0;
-      reset();
-    } else if (dragCounter > 30) {
-      startTime -= Duration(seconds: 1);
-      dragCounter = 0.0;
-      reset();
-    }
+    startTime -= Duration(milliseconds: (details.primaryDelta * 30).toInt());
+    reset();
+  }
+
+  dragEnd() {
+    startTime = Duration(seconds: startTime.inSeconds);
+    reset();
   }
 
   tap() {
@@ -106,7 +103,9 @@ class _MTimerState extends State<MTimer> {
             child: new Stack(
               // alignment: Alignment(0.0, 0.0),
               alignment: Alignment(
-                  0.0, ((currentTime.inSeconds.toDouble() - 67.0) / -80.0)),
+                  0.0,
+                  ((currentTime.inMilliseconds.toDouble() / 1000 - 67.0) /
+                      -80.0)),
               children: <Widget>[
                 new Container(color: color_sky),
                 new Stack(
@@ -122,7 +121,7 @@ class _MTimerState extends State<MTimer> {
                       ),
                     ),
                     new Text(
-                      '${sec2str(currentTime.inSeconds)}',
+                      '${sec2str(startTime.inSeconds - stopwatch.elapsed.inSeconds)}',
                       style: TextStyle(
                         fontSize: 36.0,
                         color: color_sky,
@@ -138,6 +137,7 @@ class _MTimerState extends State<MTimer> {
         new GestureDetector(
           onTap: tap,
           onVerticalDragUpdate: (details) => dragTime(details),
+          onVerticalDragEnd: (details) => dragEnd(),
         ),
       ],
     );
