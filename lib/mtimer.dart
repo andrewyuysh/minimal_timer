@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:vibrate/vibrate.dart';
+import 'package:sensors/sensors.dart';
 
 const Color color_sky = Color(0xFFAF4130);
 const Color color_mnt = Color(0xFF201E29);
@@ -27,36 +29,49 @@ String sec2str(int sec) {
 }
 
 class MTimer extends StatefulWidget {
+  final Duration startTime;
+  MTimer({this.startTime});
   @override
-  _MTimerState createState() => _MTimerState();
+  _MTimerState createState() => new _MTimerState(startTime);
 }
 
 class _MTimerState extends State<MTimer> {
   Timer timer;
-  Duration _currentTime = Duration(seconds: 0);
-  Duration startTime = Duration(seconds: 0);
+  // Duration _currentTime = Duration(seconds: 80);
+  Duration startTime;
   timerState state = timerState.ready;
   final Stopwatch stopwatch = new Stopwatch();
   double dragCounter = 0.0;
 
-  _MTimerState({
-    this.startTime = const Duration(seconds: 80),
-  });
+  _MTimerState(Duration startTime) {
+    this.startTime = startTime;
+  }
 
   get currentTime {
-    return _currentTime;
+    return startTime - stopwatch.elapsed;
   }
 
   _tick() {
-    _currentTime = startTime - stopwatch.elapsed;
+    // _currentTime = startTime - stopwatch.elapsed;
     setState(() {});
+    //
+    if (startTime.inSeconds - stopwatch.elapsed.inSeconds == 0) _done();
+  }
+
+  _done() {
+    final Iterable<Duration> pauses = [
+      const Duration(milliseconds: 2000),
+      const Duration(milliseconds: 2000),
+    ];
+    Vibrate.vibrateWithPauses(pauses);
+    // Vibrate.vibrate();
   }
 
   reset() {
     state = timerState.ready;
     stopwatch.reset();
     stopwatch.stop();
-    _currentTime = startTime;
+    // _currentTime = startTime;
     if (timer != null) timer.cancel();
     setState(() {});
   }
@@ -75,11 +90,13 @@ class _MTimerState extends State<MTimer> {
   //drag also modifies millis
   //when drag is let go, then snap to the nearest second
   dragTime(details) {
+    if (state == timerState.running) return;
     startTime -= Duration(milliseconds: (details.primaryDelta * 30).toInt());
     reset();
   }
 
   dragEnd() {
+    if (state == timerState.running) return;
     startTime = Duration(seconds: startTime.inSeconds);
     reset();
   }
@@ -88,6 +105,7 @@ class _MTimerState extends State<MTimer> {
     if (state == timerState.running)
       reset();
     else if (state == timerState.ready) resume();
+    setState(() {});
   }
 
   @override
@@ -102,18 +120,18 @@ class _MTimerState extends State<MTimer> {
             clipper: MountainClipper(),
             child: new Stack(
               // alignment: Alignment(0.0, 0.0),
-              alignment: Alignment(
-                  0.0,
-                  ((currentTime.inMilliseconds.toDouble() / 1000 - 67.0) /
-                      -80.0)),
+              alignment: Alignment(0.0,
+                  (currentTime.inMilliseconds.toDouble() / -100000) + .6777),
+              // 1.0),
               children: <Widget>[
                 new Container(color: color_sky),
                 new Stack(
                   alignment: Alignment.center,
                   children: <Widget>[
                     new Container(
-                      width: 80.0,
-                      height: 80.0,
+                      width: MediaQuery.of(context).size.width * 456.0 / 3000.0,
+                      height:
+                          MediaQuery.of(context).size.width * 456.0 / 3000.0,
                       // color: Colors.black,
                       decoration: new BoxDecoration(
                         shape: BoxShape.circle,
@@ -123,8 +141,9 @@ class _MTimerState extends State<MTimer> {
                     new Text(
                       '${sec2str(startTime.inSeconds - stopwatch.elapsed.inSeconds)}',
                       style: TextStyle(
-                        fontSize: 36.0,
-                        color: color_sky,
+                        fontSize: 26.0,
+                        color:
+                            state == timerState.running ? color_sun : color_sky,
                       ),
                       softWrap: false,
                     ),

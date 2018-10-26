@@ -11,7 +11,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:minimal_timer/mtimer.dart';
-import 'package:flutter/animation.dart';
 
 void main() {
   runApp(new MyApp());
@@ -68,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage>
   Widget build(BuildContext context) {
     return new Scaffold(
       // backgroundColor: Colors.white,
-      body: MTimer(),
+      body: MTimer(startTime: Duration(seconds: 30)),
     );
   }
 }
