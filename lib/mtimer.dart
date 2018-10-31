@@ -36,12 +36,17 @@ class MTimer extends StatefulWidget {
 }
 
 class _MTimerState extends State<MTimer> {
+  int counter = 0;
+  var accel = [0.0, 0.0, 0.0];
   Timer timer;
-  // Duration _currentTime = Duration(seconds: 80);
   Duration startTime;
   timerState state = timerState.ready;
   final Stopwatch stopwatch = new Stopwatch();
   double dragCounter = 0.0;
+
+  List<double> _accel = [0.0, 0.0, 0.0];
+  List<double> _accelPrev = [0.0, 0.0, 0.0];
+  bool toosoon = false;
 
   _MTimerState(Duration startTime) {
     this.startTime = startTime;
@@ -111,7 +116,6 @@ class _MTimerState extends State<MTimer> {
   @override
   Widget build(BuildContext context) {
     return new Stack(
-      // alignment: Alignment(0.0, currentTime.inSeconds.toDouble() / -80.0),
       children: <Widget>[
         new Container(
           color: color_mnt,
@@ -119,10 +123,8 @@ class _MTimerState extends State<MTimer> {
           child: new ClipPath(
             clipper: MountainClipper(),
             child: new Stack(
-              // alignment: Alignment(0.0, 0.0),
               alignment: Alignment(0.0,
                   (currentTime.inMilliseconds.toDouble() / -100000) + .6777),
-              // 1.0),
               children: <Widget>[
                 new Container(color: color_sky),
                 new Stack(
@@ -160,6 +162,26 @@ class _MTimerState extends State<MTimer> {
         ),
       ],
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    userAccelerometerEvents.listen((UserAccelerometerEvent event) {
+      _accel = <double>[event.x, event.y, event.z];
+      if (!toosoon &&
+          (_accelPrev.reduce((a, b) => a + b) - _accel.reduce((a, b) => a + b))
+                  .abs() >
+              .5) {
+        tap();
+        print("yay");
+        toosoon = true;
+        new Timer(const Duration(seconds: 1), () {
+          toosoon = false;
+        });
+      }
+      _accelPrev = _accel;
+    });
   }
 }
 

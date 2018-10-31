@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage>
   Widget build(BuildContext context) {
     return new Scaffold(
       // backgroundColor: Colors.white,
-      body: MTimer(startTime: Duration(seconds: 30)),
+      body: MTimer(startTime: Duration(seconds: 80)),
     );
   }
 }
