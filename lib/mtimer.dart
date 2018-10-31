@@ -37,7 +37,6 @@ class MTimer extends StatefulWidget {
 
 class _MTimerState extends State<MTimer> {
   int counter = 0;
-  var accel = [0.0, 0.0, 0.0];
   Timer timer;
   Duration startTime;
   timerState state = timerState.ready;
@@ -45,8 +44,10 @@ class _MTimerState extends State<MTimer> {
   double dragCounter = 0.0;
 
   List<double> _accel = [0.0, 0.0, 0.0];
-  List<double> _accelPrev = [0.0, 0.0, 0.0];
+  List<double> _gyro = [0.0, 0.0, 0.0];
   bool toosoon = false;
+  bool violentMovement = false;
+  bool gyrating = false;
 
   _MTimerState(Duration startTime) {
     this.startTime = startTime;
@@ -91,9 +92,6 @@ class _MTimerState extends State<MTimer> {
     });
   }
 
-  //use actual currentTime (millis instead of seconds)
-  //drag also modifies millis
-  //when drag is let go, then snap to the nearest second
   dragTime(details) {
     if (state == timerState.running) return;
     startTime -= Duration(milliseconds: (details.primaryDelta * 30).toInt());
@@ -168,19 +166,27 @@ class _MTimerState extends State<MTimer> {
   void initState() {
     super.initState();
     userAccelerometerEvents.listen((UserAccelerometerEvent event) {
-      _accel = <double>[event.x, event.y, event.z];
-      if (!toosoon &&
-          (_accelPrev.reduce((a, b) => a + b) - _accel.reduce((a, b) => a + b))
+      violentMovement =
+          (<double>[event.x, event.y, event.z].reduce((a, b) => a + b) -
+                      _accel.reduce((a, b) => a + b))
                   .abs() >
-              .5) {
+              5;
+      if (violentMovement) print("moving");
+    });
+    gyroscopeEvents.listen((GyroscopeEvent event) {
+      gyrating = (<double>[event.x, event.y, event.z].reduce((a, b) => a + b) -
+                  _gyro.reduce((a, b) => a + b))
+              .abs() >
+          .3;
+      if (gyrating) print("gyrating");
+      if (!toosoon && violentMovement && !gyrating) {
         tap();
-        print("yay");
+        print("kicking");
         toosoon = true;
         new Timer(const Duration(seconds: 1), () {
           toosoon = false;
         });
       }
-      _accelPrev = _accel;
     });
   }
 }
